@@ -1,0 +1,266 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+
+<!--la balise de notre graphe et les explications et texte explicatif-->
+
+
+<div id="barchart" style="margin-top: 50px;"></div>
+
+<div style="margin-top: 50px; margin-left: 50px;margin-right: 50px; padding-left: 20px;padding-top: 30px;padding-bottom: 20px;  border-radius: 20px;border-color: black;background: #e8e8e8">
+  <p style="font-size: 1.5em;"> Explication et remarque </p>
+  <p>Cette presentation est considerée comme principale et l'autre est secondaire  <a href="chart_example_from_d3-graph-gallery(1)"> cliquez pour voir la dexieme presentation</a> </p>
+  <p> Cette visualisation est présentée après un calcul des données CSV par notre script, Ce script analyse le fichier CSV qui doit être séparé par des virgules et calcule le nombre de catégories de chaque variable (par exemple le calcul du nombre d'hommes et de femmes dans la variable sexe ). </p>
+  <p>Ce schemas est une representation globale sur les patients (Le nombre des femmes et des hommes,Le nombre despatients mineurs et majeurs,Le nombre des patients lyciens/universitaires/des collégiens, le nombre de personnes par rapport a leurs activité , le nombre de consomateurs des produitsa base de tabac par rapport au non consomateurs ). 
+  <p> Ce n'est pas une erreur que les barres ont la même longueur, notre ensemble de données contient 106 lignes, ce qui signifie 106 patients, donc chaque variable de notre CSV a 106 valeur. </p>
+  <p>toutes les contraintes spécifiées dans le tableau de l'énnoncé TP ont été respectées jusqu'au niveau d'excellence, veuillez consulter les commentaires du code pour comprendre la deuxième partie du travail de notre script. </p>
+  <p style="font-size: 1.5em;"> Le choix de données</p>
+  <p> Les 5 variables représentées sur l'axe X sont considérées comme les plus importantes par rapport à notre étude, Ces variables et leurs données ont été préparées après une étape d'analyse et de filtrage des données pour produire en conséquence des données Focus (processus de génération de visualisation).</br>
+  Le choix a été fixé sur 5 variables car le nombre maximum d'informations pouvant être mémorisées par l'être humain est de 5, il n'est donc pas recommandé de le dépaser. Ces variables sont: le sexe du patient, son âge, son niveau d'éducation, son activité professionnelle et sa consommation de produits du tabac.  </p>
+  <p style="font-size: 1.5em;"> Codage visuel </p>
+  <p>  D apres le module Infovis on a vu que le système visuel produirait dans les trois modalités (spatialité, texture et chromatisme) que retiennent les humains des structures de percepts élémentaires, intégrant et organisant les stimuli à partir de structures spécialisées: extracteurs de motifs, de directions, de contrastes, etc.</br>Pour orienter le lecteur et appuyer notre propos, nous avons utiliser du texte et des valeurs de comparaison pour rendre l’information affichée significative, Ce present schemas est devenu beaucoup plus significatif avec une présentation par comparaison aux autres données, avec un titre plus clair.</br>
+  Dans notre présentation, les variables affichées sont de type quantitatif, et nous avons donc basé sur les couleurs pour différencier les catégories de chaque variable puisque ces catégories sont également de type quantitatif; par exemple la variable sexe a 2 catégories quantitatives (homme et femme) donc l'utilisation de couleurs adaptables à ce type de visualisation est le bleu(Homme) et le rose(Femme). </br>
+ la forme et la direction sont respectées car les shemas d'histogramme ont tous les mêmes caractéristiques.
+     Le contraste est utilisé dans les barres afin d'attirer l'attention de l'humain sur la différence des catégories dans la même variable.</br>
+   des couleurs analogues sont utilisées dans la variable du niveau d'éducation en raison de leur appartenance à la même catégorie (éducation) et pour montrer la différence de niveau d'éducation à partir d'une échelle de diplomation.</br>
+  Ce codage a été choisi pour afficher la différence quantitative de chaque catégorie dans la même variable et pour donner une vue d'ensemble de chaque variable et de leur contenu,Et en utilisant des contrastes et des couleurs liées au sujet, nous avons faciliter la compréhension et orienter l’attention du lecteur vers ce qui nous intéresse.</br>
+  Notre graphe a barre offre une vue claire sur les données présentées, Ces derniers sont faciles à lire et interpréter .le texte des axes est dans le sens habituel de lecture, avec le libellé près des barres de données. Ainsi, il est beaucoup plus facile d’interpréter les données. La police utilisée est une police Sans Serif à largeur de caractères variable, ce que plusieurs auteurs recommandent particulièrement pour la consultation à l’écran.
+    </p>
+    <p style="font-size: 1.5em;"> Représentation Global</p>
+    <p>
+    Dans un contexte de cette visualisation, l’interprétation peut prendre diverses formes, telles que la comparaison de valeurs, la classification de catégories, la distribution des données d’une variable (Sexe ..etc ).</br>
+      Les contrainte sur la disponibilité des axes,des bares, et texte sont respectées.</br>
+      veuillez toucher les bars pour afficher les textes, chaque variable a ses propres details. 
+    </p>  
+     <p style="font-size: 1.5em;"> Interactions </p>
+      <p> Dans ce type de présentation, la seule interaction qui peut être réalisée est l'utilisation de la souris pour l'affichage des informations et sans modification de la visualisation, car un petit changement dans les barres peut donner une mauvaise visualisation des informations. et de mauvaises données. </p>
+       <p style="font-size: 1.5em;"> Autres vues </p>
+       <p> L'utilisation des couleurs hsl a été respecté , veuillez verifier le scripte   </p>
+        <p> veuillez visiter l'autre fichier pour voir d'autres presentations interactives</p>
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+
+<script>
+
+
+ 
+// les dimensions et les marges de notre graphe vont etre fixé
+var margin = {top: 10, right: 30, bottom: 20, left: 50},
+    width = 1800 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+
+//on selecte l'element barchart et on ajoute l'element SVG et ses attributs
+// on ajoute un element de groupe "g" et on le décale avec la fonction "transalte" par rapport a la marge  
+
+var svg2=d3.select("#barchart").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//On commance par l'extraction de notre Dataset on utilisant le module csv deja dispo dans le package D3.js
+//Le fichier CSV doit etre separé par virgule et non de type XLSX
+//le fichier est attaché au projet
+var base;
+d3.csv("exercicexls(1).csv", function(data) {
+
+  //le fichier recuperé est sous forme objet javascript stocké dans la variable data et recuperé par la fonction en tant que variable d'entré
+	
+base=data;
+
+//Extraction de la tete de notre fichier CSV : se sont les variables dans notre axe X (sexe , age ....)
+var groups2 = base.columns.slice(1);
+
+//on commance par contruire nos axes : "a" c'est l'axe X de notre graph et b est l'axe y de notre graph
+var a = d3.scaleBand()
+      .domain(groups2)
+      .range([0, width])
+      .padding([0.2])
+  svg2.append("g")
+    .attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(a).tickSizeOuter(0));
+
+//  b est l'axe y de notre graph
+var b = d3.scaleLinear()
+    .domain([0, 130])
+    .range([ height, 0 ]);
+  svg2.append("g")
+    .call(d3.axisLeft(b));
+
+//poure exliquer : voici les categories de chaque variable dans l'axe , par exemple subgroupe1 pour le sexe , subgroupe2 pour l'age ...etc
+
+var subgroups1 = ["homme","femme"];
+var subgroups2 = ["sup18","inf18"];
+var subgroups3 = ["lycee","universitaire","ecole secondaire"];
+var subgroups4 = ["oui","non"];
+var subgroups5 = ["oui","non"];
+
+//console.log(base);
+//Ces variables ce desous (nbhomme,nbfemme , .......) ont été utilisées pour calculer le nombre de chaque categorie : par exemple dans la premire variable de notre CSV (sexe) on va calculer le nombre de femmes et hommes
+
+var nbhomme =0;
+var nbfemme=0 ,nbmin=0,nbmaj=0;nblycee=0,nbuniv=0,nbecole=0,etud=0,empetat=0,emppriv=0,chomeur=0,nbfumeur=0,nbnonfum=0;
+
+//le calcule de ces variable ce deroule comme suit:
+
+for(var i=0;i<data.length ; i++){  if(data[i].sexe =="homme") nbhomme+=1 ;
+	else nbfemme+=1;
+   if(data[i]["Quel age avez-vous ?"] <18) nbmin+=1;
+   else nbmaj +=1;
+if(data[i]["niveau d etude"] =="lycee") nblycee+=1;
+   else if(data[i]["niveau d etude"] =="universitaire") nbuniv +=1;
+   else if(data[i]["niveau d etude"] =="ecole secondaire") nbecole +=1;
+if(data[i]["Quelles est votre activiteprofessionnelle"] =="Employe de l Etat") empetat+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="chomeur(se)") chomeur+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="Employe dans le prive") emppriv+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="etudiant") etud+=1;
+
+if(data[i]["Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?"]=="oui") nbfumeur+=1 ;
+	else nbnonfum+=1;
+
+ }
+//console.log(nbfumeur);
+//console.log(nbnonfum);
+//console.log(chomeur);
+//console.log(etud);
+
+//pour exploiter notre calcule on va creér une variable objectdata pour stocker les variables calculées  
+//voici un object pour stocker toutes les données sur notre fichier CSV , veuillez le lire attentivement
+
+var objectdata=[  [{ name :"sexe",valeur : "homme", nombre: nbhomme ,comm: 0},{ name :"sexe",valeur : "femme", nombre: nbfemme , comm: nbhomme}] ,
+
+[{ name :"Quel age avez-vous ?",valeur : "<18", nombre: nbmin , comm: 0},{ name :"Quel age avez-vous ?",valeur : ">18", nombre: nbmaj , comm: nbmin}] ,
+
+[{ name :"niveau d etude",valeur : "lycee", nombre:nblycee , comm: 0},{ name :"niveau d etude",valeur : "universitaire", nombre: nbuniv , comm: nblycee }, { name :"niveau d etude",valeur : "ecole secondaire", nombre: nbecole , comm: nblycee+nbuniv }],
+
+[{ name :"Quelles est votre activiteprofessionnelle",valeur : "Employe de l Etat", nombre:empetat , comm: 0 },{ name :"Quelles est votre activiteprofessionnelle",valeur : "chomeur(se)", nombre: chomeur , comm: empetat}, { name :"Quelles est votre activiteprofessionnelle",valeur : "Employe dans le prive", nombre: emppriv , comm: empetat+chomeur},{ name :"Quelles est votre activiteprofessionnelle",valeur : "etudiant", nombre: etud , comm: emppriv+empetat+chomeur }],
+
+[{ name :"Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?",valeur : "oui", nombre: nbfumeur , comm: 0},{ name :"Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?",valeur : "non", nombre: nbnonfum , comm: nbfumeur}] 
+
+
+
+];
+
+
+//console.log(objectdata);
+//var debut = [0,objectdata[0][0].nombre];
+//console.log(debut);
+//console.log(objectdata);
+
+ //c'est un objet qui contient la div qui va apparetre apres la selection d'un barre de notre graphe
+ //on selecte la div "barchart" et on ajoute une autre div pour le texte avec un style approprié   
+
+ var tooltip2 = d3.select("#barchart")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "white")
+    .style("border", "solid")
+    .style("border-width", "1px")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+
+//cette fonction "mouseover" concerne la sourie , quand on touche le barre automatiquement la partie du texte doit etre remplie
+// donc on recupere premierement l'objet selectionné puisque chaque barre a son propre object 
+//cet object "tab" dans la fonction contient les informations sur le barre , vous pouvez voir dans la console que à chaque fois qu'on touche la barre un objet va etre affiché 
+//on parcours cette table avec la fonction map (ES6) pour construire la phrase qui va etre affichée sur le contenu de la barre 
+//et a la fin on ajoute notre phrase a la balise repesenté par tooltips2  
+
+var mouseover = function(d) {
+    //var subgroupName = d3.select(this.parentNode).datum().key;
+     console.log(d3.select(this.parentNode).datum());
+
+     var tab=d3.select(this.parentNode).datum();
+     var phrase="Type de la colonne: " + tab[0].name + "<br>" ;
+     tab.map( (d)=>{ phrase=phrase+ "Categorie: " +d.nombre+" "+d.valeur +"<br>" });
+    
+    tooltip2
+        .html(phrase )
+        .style("opacity", 1);
+  }
+var mousemove = function(d) {
+    tooltip2
+      .style("left", (d3.mouse(this)[0]+90) + "px") // It is important to put the +90: other wise the tooltip is exactly where the point is an it creates a weird effect
+      .style("top", (d3.mouse(this)[1]) + "px")
+  }
+  var mouseleave = function(d) {
+    tooltip2
+      .style("opacity", 0)
+  }
+
+
+// cet objet "color" represente une echelle de couleurs , chaque categorie va avoir sa propre couleur HSL
+var color = d3.scaleOrdinal()
+    .domain( ["homme","femme",">18","<18","lycee","universitaire","ecole secondaire","Employe de l Etat","chomeur(se)","Employe dans le prive","etudiant","oui","non"]  
+    	)
+    .range(['hsl(207, 87%, 69%)','hsl(339, 87%, 69%)','hsl(132, 56%, 86%)','hsl(4, 99%, 66%)','hsl(72, 87%, 69%)','hsl(98, 87%, 69%)','hsl(126, 57%, 56%)','hsl(177, 83%, 47%)','hsl(221, 83%, 47%)','hsl(283, 83%, 47%)','hsl(317, 98%, 49%)','hsl(131, 74%, 70%)','hsl(357, 94%, 66%)']) ;
+
+
+   // var my_transform = d3Transform().translate([60, 60])
+   
+ // on selectione notre image SVG et on ajoute pour chaque element dans la table "objectdata" un groupe "g"
+ //si vous avez compris le contenu de notre objectdata vous allez tres vite comprendre ce qui va etre affecté a chaque groupe
+ //chaque groupe va avoir un objet qui represente le contenu de chaque variable dans l'axe (par exemple sexe,age ...)
+ // si on prend l'exemple de la variable sexe : le premier element "g" va avoir un objet qui represente sexe
+// et la variable age : le deuxieme element "g" va avoir un objet qui represente age et ainsi de suite
+// donc en d'autre terme chaque groupe va recevoir des informations sur les categories de chaque variable associé
+var g = svg2.append("g").selectAll("g").data(function(d) { return objectdata; }).enter().append("g")
+
+//puisque chaque groupe a les informations sur les categories on peut creer un rectangle pour chaque categorie
+//cette astuce est possible on passant le contenue de chaque donnée associé à "g" dans la fonction data
+//ce qui veut dire qu'on va creer un rectangle pour chaque categorie
+//ces rectangles doivent prendre les couleurs par rapport a l'echelle de couleur deja definie et doivent etre une au desus de l'autre
+//la fonction color represente l'echelle deja défini dans la ligne 213
+// par rapport au attributs ,je pense qu'ils sont claires, il faut juste de la reflexion pour comprendre l'astuce de l'attribut x et height
+//  on ajoute a la fin les fonctions d'interractivité à nos rectangles 
+var care= g.selectAll("rect")
+.data(function(d) { console.log(d); return d; })
+      .enter()
+      .append("rect").attr("fill", function(d) { return color(d.valeur); }).attr("x", function(d) { console.log(d); return a(d.name); })
+        .attr("y", function(d) { if(d.comm ==0){return b(d.nombre);} else {return b(d.nombre) -(height -b(d.comm))    ;}  })
+        .attr("height",function(d) {return height -b(d.nombre);} )
+        .attr("width",a.bandwidth()).attr("stroke", "grey").on("mouseover", mouseover)
+      .on("mousemove", mousemove)
+      .on("mouseleave", mouseleave)
+        
+
+
+
+
+}
+    
+	);
+
+
+
+
+
+
+
+
+
+
+
+</script>

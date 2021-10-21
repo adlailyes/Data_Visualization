@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Add  buttons -->
+<div  style="margin-left: 370px;margin-top: 50px;"><button onclick="update(data1)">Sexe</button>
+<button onclick="update(data2)">Age</button>
+<button onclick="update(data3)">Niveau d'etude</button>
+<button onclick="update(data4)"> activité professionnelle</button>
+<button onclick="update(data5)">consommation de produits du tabac</button></div>
+
+
+
+<div id="my_dataviz" style="margin-left: 400px;margin-top: 50px;margin-right: 500px; border-style: solid;border-color: coral; "></div>
+
+
+
+
+
+
+<div style="margin-top: 50px; margin-left: 50px;margin-right: 50px; padding-left: 20px;padding-top: 30px;padding-bottom: 20px;  border-radius: 20px;border-color: black;background: #e8e8e8">
+  <p style="font-size: 1.5em;"> Explication et remarque </p>
+  <p>Cette presentation est considerée comme secondaire  <a href="chart_example_from_d3-graph-gallery"> cliquez pour voir la presentation principale</a> </p>
+  <p> Cette visualisation est présentée après un calcul des données CSV par notre script, Ce script analyse le fichier CSV qui doit être séparé par des virgules et calcule le nombre de catégories de chaque variable (par exemple le calcul du nombre d'hommes et de femmes dans la variable sexe ). </p>
+  <p> Chaque axe va changé par rapport a la variable selectionée </p>
+  <p>toutes les contraintes spécifiées dans le tableau de la déclaration TP ont été respectées jusqu'au niveau d'excellence, veuillez consulter les commentaires du code pour comprendre la deuxième partie du travail de notre script </p>
+  <p style="font-size: 1.5em;"> Le choix de données</p>
+  <p> Les 5 variables représentées sur les boutons sont considérées comme les plus importantes par rapport à notre étude, Ces variables et leurs données ont été préparées après une étape d'analyse et de filtrage des données pour produire en conséquence des données Focus (processus de génération de visualisation).</br>
+  Le choix a été fixé sur 5 variables car le nombre maximum d'informations pouvant être mémorisées par l'être humain est de 5, il n'est donc pas recommandé de le dépaser. Ces variables sont: le sexe du patient, son âge, son niveau d'éducation, son activité professionnelle et sa consommation de produits du tabac.  </p>
+  <p style="font-size: 1.5em;"> Codage visuel </p>
+  <p>  D apres le module Infovis on a vu que le système visuel produirait dans les trois modalités (spatialité, texture et chromatisme) que retiennent les humains des structures de percepts élémentaires, intégrant et organisant les stimuli à partir de structures spécialisées: extracteurs de motifs, de directions, de contrastes, etc.</br>
+  Dans notre présentation, les variables affichées sont de type quantitatif, donc nous avons donné a chaque variable son propre schemas representatif puisque leur catégories sont également de type quantitatif; par exemple la variable sexe a 2 catégories quantitatives (homme et femme) donc l'utilisation des barres pour chaque categorie est necessaire pour une bonne visualisation </br>
+ la forme et la direction sont respectées car les shemas d'histogramme ont tous les mêmes caractéristiques.
+     Le contraste est utilisé dans les barres afin d'attirer l'attention de l'humain par rapport au fond blanc de l'interface.</br>
+   </br>
+  Ce codage a été choisi pour afficher la différence quantitative de chaque catégorie dans la même variable et pour donner une vue d'ensemble de chaque variable et de leur contenu.
+    </p>
+    <p style="font-size: 1.5em;"> Représentation Global</p>
+    <p>
+      Les contrainte sur la disponibilité des axes,des bares, et texte sont respectées.</br>
+      
+    </p>  
+     <p style="font-size: 1.5em;"> Interactions </p>
+      <p> Dans ce type de présentation, la seule interaction qui peut être réalisée est l'utilisation de la souris pour l'affichage des informations et sans modification de la visualisation, car un petit changement dans les barres peut donner une mauvaise visualisation des informations. et de mauvaises données. </p>
+       <p style="font-size: 1.5em;"> Autres vues </p>
+       <p> L'utilisation des couleurs hsl a été respecté    </p>
+      
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+
+<script>
+// Des variables pour calculer les cotegories des chaque variable
+
+var nbhomme =0;
+var nbfemme=0 ,nbmin=0,nbmaj=0;nblycee=0,nbuniv=0,nbecole=0,etud=0,empetat=0,emppriv=0,chomeur=0,nbfumeur=0,nbnonfum=0;
+
+//oject qui resume le calcule des differentes categories
+var objectdata;
+
+
+// ces variables vont contenir les informations sur chaque categorie
+var data1,data2,data3,data4;
+
+//sexe
+data1 = [
+   {group: "homme", value: nbhomme},
+   {group: "femme", value: nbfemme}
+];
+//age
+data2 = [
+   {group: "<18", value: nbmin},
+   {group: ">18", value: nbmaj}
+];
+//Niveau d'etude
+data3 = [
+   {group: "lycee", value: nblycee},
+   {group: "universitaire", value: nbuniv},
+   {group: "ecole secondaire", value: nbecole}
+];
+//activité professionnelle
+data4 = [
+   {group: "Employe de l Etat", value: empetat},
+   {group: "chomeur(se)", value: chomeur},
+   {group: "Employe dans le prive", value: emppriv},
+  {group: "etudiant", value: etud}
+];
+//consommation de produits du tabac
+data5 = [
+   {group: "oui", value: nbfumeur},
+   {group: "non", value: nbnonfum}
+];
+
+//les variables qui contient notre image SVG et les axes 
+var svg,x,y;
+
+//les marges , la longeur et la largeur sont fixé
+var margin = {top: 30, right: 30, bottom: 70, left: 60},
+    width = 460 - margin.left - margin.right,
+    height = 400 - margin.top - margin.bottom;
+
+
+// les categories de chaque variable
+var subgroups1 = ["homme","femme"];
+var subgroups2 = ["sup18","inf18"];
+var subgroups3 = ["lycee","universitaire","ecole secondaire"];
+var subgroups4 = ["oui","non"];
+var subgroups5 = ["oui","non"];
+
+
+//creation de notre image avec les marges et le decalage avec la fontion translate
+svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+// Les axes X : chaque Variable a son propre axe , vous allez voir que a chaque selection de variable les axes vont changés
+//axe de data1 sexe
+var x = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data1.map(function(d) { return d.group; }))
+  .padding(0.2);
+
+//axe de data2 age
+  var x2 = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data2.map(function(d) { return d.group; }))
+  .padding(0.2);
+
+//axe de data3  Niveau d'etude
+  var x3 = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data3.map(function(d) { return d.group; }))
+  .padding(0.2);
+
+//axe de data4 activité professionnelle
+  var x4 = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data4.map(function(d) { return d.group; }))
+  .padding(0.2);
+
+  //axe de data5  consommation de produits du tabac
+
+ var x5 = d3.scaleBand()
+  .range([ 0, width ])
+  .domain(data5.map(function(d) { return d.group; }))
+  .padding(0.2);
+
+svg.append("g")
+.attr("class", "myXaxis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x))
+
+// l'axe des Y
+var y = d3.scaleLinear()
+  .domain([0, 150])
+  .range([ height, 0]);
+svg.append("g")
+  .attr("class", "myYaxis")
+  .call(d3.axisLeft(y));
+
+//console.log(nbfumeur);
+//console.log(nbnonfum);
+//console.log(chomeur);
+//console.log(etud);
+
+//a chaque fois que l'utilisateur clique sur le bouton les données de notre graphe doivent se changées et les axes
+//update est une fonction declanchée a chaque clique de bouton
+//on doit supprimer les axes et les rectangles de chaque pecedante presentation pour les remplacés
+//puis par rapport a la donnée qu'on va representé les axes vont changés ce qui est fait avec if
+
+
+function update(donne) {
+console.log(donne);
+svg.selectAll("g").attr("class", "myXaxis").remove();
+svg.selectAll("rect").remove();
+
+if (donne[0].group=="homme"){svg.append("g")
+  .attr("class", "myXaxis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x));}
+  else if (donne[0].group=="<18"){
+svg.append("g")
+.attr("class", "myXaxis")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x2));}
+  else if (donne[0].group=="lycee"){svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x3));}
+  else if (donne[0].group=="Employe de l Etat"){svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x4));}
+  else if (donne[0].group=="oui"){svg.append("g")
+  .attr("transform", "translate(0," + height + ")")
+  .call(d3.axisBottom(x5));}  
+  
+
+
+  
+
+  svg.append("g")
+  .attr("class", "myYaxis")
+  .call(d3.axisLeft(y));
+//on selectione chaque rectangle et on passe nos données
+
+  var u = svg.selectAll("rect")
+    .data(donne)
+
+// chaque rectangle on l'affecte à son axe par rapport a la propriété groupe dans son object 
+// les attributs de chaque rectangle vont etre specifiés par rapport a son object data affecté 
+// par exemple on affecte le premier rectangle qui est dans le groupe homme a son axe X1 et ainsi de suite
+// la meme chose pour le groupe lycee ou d'autres, chacun va etre affecté à son axe
+//pour les autres attributs tout est claire 
+  u
+    .enter()
+    .append("rect")
+    .merge(u)
+    .transition()
+    .duration(1000)
+      .attr("x", function(d) {  if (donne[0].group=="homme"){return x(d.group);}
+  else if (donne[0].group=="<18"){ return x2(d.group);
+}
+  else if (donne[0].group=="lycee"){ return x3(d.group);}
+  else if (donne[0].group=="Employe de l Etat"){  return x4(d.group);}
+  else if (donne[0].group=="oui"){  return x5(d.group);}
+
+
+
+
+        })
+      .attr("y", function(d) { return y(d.value); })
+      .attr("width", function(){   if (donne[0].group=="homme"){return x.bandwidth();}
+  else if (donne[0].group=="<18"){ return x2.bandwidth();
+}
+  else if (donne[0].group=="lycee"){ return x3.bandwidth();}
+  else if (donne[0].group=="Employe de l Etat"){  return x4.bandwidth();}
+  else if (donne[0].group=="oui"){  return x5.bandwidth();}    }
+
+
+    )
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("fill", "#69b3a2")
+}
+
+// on initialise notre schemas par la fonction deja definie
+update(data1)
+
+
+
+//dans cette partie on a utilisé les promisses : c'est une methode pour donner une promesse de realiser qlq chose , et dés qu'il soit terminé le resultat va etre envoyé dans la fonction myResolve
+//la raison pour utiliser une telle methode c'est l'impossibilité de charger les données avant de definir notre schemas
+//en d'autre terme : si on charge les données puis on cree notre schemas les données ne vont pas etre affectées dans le schemas parceque le chargement prend un temps enorme .
+//et meme si veut copier le code de notre schemas à l'interieur de la fonction de chargement (d3.csv) pour eviter ce probleme il nous reste un autre probleme, qui est la definition de la fonction update, car on peut pas definir une fonction dans un bloc executable ou fonction executable.
+//il n'y'a une solution meilleur que celle ci : on va definir une promesse , et dés que le chargement se termine le schemas va etre mis a jour
+
+
+let myPromise = new Promise(function(myResolve, myReject) {
+
+
+d3.csv("exercicexls(1).csv", function(data) { 
+
+//console.log(base);
+
+//on charge les données et on calcule les categories
+
+for(var i=0;i<data.length ; i++){  if(data[i].sexe =="homme") nbhomme+=1 ;
+  else nbfemme+=1;
+   if(data[i]["Quel age avez-vous ?"] <18) nbmin+=1;
+   else nbmaj +=1;
+if(data[i]["niveau d etude"] =="lycee") nblycee+=1;
+   else if(data[i]["niveau d etude"] =="universitaire") nbuniv +=1;
+   else if(data[i]["niveau d etude"] =="ecole secondaire") nbecole +=1;
+if(data[i]["Quelles est votre activiteprofessionnelle"] =="Employe de l Etat") empetat+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="chomeur(se)") chomeur+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="Employe dans le prive") emppriv+=1;
+else if (data[i]["Quelles est votre activiteprofessionnelle"] =="etudiant") etud+=1;
+
+if(data[i]["Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?"]=="oui") nbfumeur+=1 ;
+  else nbnonfum+=1;
+
+
+
+
+
+ }
+//console.log(nbfumeur);
+//console.log(nbnonfum);
+//console.log(chomeur);
+//console.log(etud);
+
+//un objet qui resume le contenu du fichier CSV
+
+ objectdata=[  [{ name :"sexe",valeur : "homme", nombre: nbhomme ,comm: 0},{ name :"sexe",valeur : "femme", nombre: nbfemme , comm: nbhomme}] ,
+
+[{ name :"Quel age avez-vous ?",valeur : "<18", nombre: nbmin , comm: 0},{ name :"Quel age avez-vous ?",valeur : ">18", nombre: nbmaj , comm: nbmin}] ,
+
+[{ name :"niveau d etude",valeur : "lycee", nombre:nblycee , comm: 0},{ name :"niveau d etude",valeur : "universitaire", nombre: nbuniv , comm: nblycee }, { name :"niveau d etude",valeur : "ecole secondaire", nombre: nbecole , comm: nbecole }],
+
+[{ name :"Quelles est votre activiteprofessionnelle",valeur : "Employe de l Etat", nombre:empetat , comm: 0 },{ name :"Quelles est votre activiteprofessionnelle",valeur : "chomeur(se)", nombre: chomeur , comm: empetat}, { name :"Quelles est votre activiteprofessionnelle",valeur : "Employe dans le prive", nombre: emppriv , comm: chomeur},{ name :"Quelles est votre activiteprofessionnelle",valeur : "etudiant", nombre: etud , comm: emppriv }],
+
+[{ name :"Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?",valeur : "oui", nombre: nbfumeur , comm: 0},{ name :"Fumez-vous actuellement des produitsa base de tabac tels que cigarettes?",valeur : "non", nombre: nbnonfum , comm: nbfumeur}] 
+
+
+
+];
+
+
+// Mise a jour de nos données sur les categories apres le chargement
+data1 = [
+   {group: "homme", value: nbhomme},
+   {group: "femme", value: nbfemme}
+];
+
+data2 = [
+   {group: "<18", value: nbmin},
+   {group: ">18", value: nbmaj}
+];
+
+data3 = [
+   {group: "lycee", value: nblycee},
+   {group: "universitaire", value: nbuniv},
+   {group: "ecole secondaire", value: nbecole}
+];
+
+data4 = [
+   {group: "Employe de l Etat", value: empetat},
+   {group: "chomeur(se)", value: chomeur},
+   {group: "Employe dans le prive", value: emppriv},
+    {group: "etudiant", value: etud}
+];
+
+data5 = [
+   {group: "oui", value: nbfumeur},
+   {group: "non", value: nbnonfum}
+];
+ myResolve("ok");  // le resultat de notre chargement va etre un message "OK"
+});
+
+  
+});
+
+//apres le chargement un message OK va etre envoyé au bloc suivant 
+//consultez la console pour verifier
+//on mis a jour notre schemas avec l'execution de la methode update
+
+myPromise.then(function(value) {
+  console.log(value);
+  update(data1)
+
+});
+
+
+
+
+
+</script>
